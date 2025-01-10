@@ -69,33 +69,63 @@ export default function Home() {
 
     const droppableSelected = over.id
 
-    
 
+    if (droppableSelected !== '_deck' && deck[droppableSelected] !== null) {
+      return
+    }
+
+    console.log(droppableSelected)
     setDeck((prevDeck) => {
       const pos = prevDeck.indexOf(currentDraggableId)
+      console.log(pos)
+      // if the card is dragged to the deck of cards again, we need to empty the slot on the board and update the deck of cards.
+      // we need to check if the draggable is on the board and was moved back to the deck
+      const isOnTheBoard = pos !== -1
+      if (droppableSelected === '_deck') {
+        setDeckCards((prevCards) => {
+          const newCards = [...prevCards]
+          newCards[currentDraggableId] = currentDraggableId
+          return newCards
+        })
 
-      if (prevDeck[droppableSelected] !== null) {
-        return prevDeck
+        if (!isOnTheBoard) return prevDeck // nothing changes on the board. Ex: dragged the item from the deck and put it back in the deck.
+
+        if (isOnTheBoard) {
+          const newDeck = [...prevDeck]
+          newDeck[pos] = null
+          return newDeck
+        }
+
       }
 
+      // if the card is NOT in the board then simply put it on it.
       if (pos === -1) {
+        setDeckCards((prevCards) => {
+          const newCards = [...prevCards];
+          newCards[currentDraggableId] = null;
+          console.log("newDeckCards", newCards);
+          return newCards;
+        })
+
+
         const newDeck = [...prevDeck];
         newDeck[droppableSelected] = currentDraggableId;
         return newDeck;
+
+
       }
 
+      // if the card is already on the board, you can move it to an empty slot.
       prevDeck[pos] = null
       const newDeck = [...prevDeck]
       newDeck[droppableSelected] = currentDraggableId;
       return newDeck;
+
+
+
     })
 
-    setDeckCards((prevCards) => {
-      const newCards = [...prevCards];
-      newCards[currentDraggableId] = null;
-      console.log("newDeckCards", newCards);
-      return newCards;
-    })
+
 
   }
 
@@ -125,8 +155,10 @@ export default function Home() {
 
           {deck.map((item, index) => (
             <Droppable id={index} key={index}>
-              {/* deck[index] is the id of the Draggable element that is on that deck slot */}
-              {deck[index] !== null ? titanCards[deck[index]] : null}
+              <div className="h-[80px] w-[70px] border-solid border-2 border-neutral rounded-md">
+                {/* deck[index] is the id of the Draggable element that is on that deck slot */}
+                {deck[index] !== null ? titanCards[deck[index]] : null}
+              </div>
             </Droppable>
           ))}
 
@@ -134,19 +166,18 @@ export default function Home() {
 
 
         {/* Draggable Titans */}
-        <div className="flex flex-wrap gap-3 bg-neutral w-[592px] h-[360px] rounded-md p-3">
+        <Droppable id="_deck">
+          <div className="flex flex-wrap gap-3 bg-neutral w-[592px] h-[360px] rounded-md p-3">
+            {deckCards.map((id, index) => (
+              // render titanCards[index] if deckCards[index] is not null. Remember the key since is a list.
+              deckCards[index] !== null ? <div key={index}>{titanCards[deckCards[index]]}</div> : null
+              // deckCards[index] !== null ? 
+              // <div key={index}>{titanCards[deckCards[index]]}</div>
+              // : null
+            ))}
+          </div>
+        </Droppable>
 
-          {deckCards.map((id, index) => (
-            // render titanCards[index] if deckCards[index] is not null. Remember the key since is a list.
-            deckCards[index] !== null ? <div key={index}>{titanCards[deckCards[index]]}</div> : null
-            // deckCards[index] !== null ? 
-            // <div key={index}>{titanCards[deckCards[index]]}</div>
-            // : null
-
-
-
-          ))}
-        </div>
 
       </div>
     </DndContext>
