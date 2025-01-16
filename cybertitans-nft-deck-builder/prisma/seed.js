@@ -2,18 +2,46 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 // use `prisma` in your application to read and write data in your DB
+const { utapi } = require("../app/server/uploadthing/uploadthing");
 
-// Define the main function that will handle database operations
+
 async function main() {
-	// Create a new user in the database using Prisma Client
-	const titan1 = await prisma.titan.create({
-        data: {
-            name: "dummy1"
-        }
-    })
+	// files: [
+	// 	{
+	// 	  id: 'f926d48b-15ed-41da-997a-f1a5104fe18c',
+	// 	  customId: null,
+	// 	  key: 'AA3xkTQET8So7YjT83iKPQh51auw7ytczNvCpMeLqHZO0nX9',
+	// 	  name: 'UKIR.png',
+	// 	  size: 1049450,
+	// 	  status: 'Uploaded',
+	// 	  uploadedAt: 1736880469000
+	// 	},
+	// 	{
+	// 	  id: 'dbb3d420-6b61-477a-8541-c52d92f6b8e7',
+	// 	  customId: null,
+	// 	  key: 'AA3xkTQET8So6XBoUf7mzgcx40Chv2prAtTlbN3V5ZdjXsDo',
+	// 	  name: 'MOONBEAN.png',
+	// 	  size: 767162,
+	// 	  status: 'Uploaded',
+	// 	  uploadedAt: 1736880469000
+	// 	},
 
-	// Output the email of the newly created user
-	console.log(`Created user: ${titan1.name}`);
+	const APP_ID = "jy37vuigv8"
+
+	const {files} = await utapi.listFiles();
+
+	for (const file of files) {
+
+        const titan = await prisma.titan.create({
+            data: {
+                name: file.name,
+                image_url: `https://${APP_ID}.ufs.sh/f/${file.key}`
+            }
+        })
+
+        console.log(`Updated titan: ${titan}`);
+    }
+
 }
 
 // Execute the main function and handle disconnection and errors

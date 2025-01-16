@@ -1,9 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        remotePatterns: [{
+        remotePatterns: [
+            {
             hostname: "img.daisyui.com"
-        }]
+        },
+        {
+            hostname: "jy37vuigv8.ufs.sh",
+        }
+    ]
     }
 };
 
