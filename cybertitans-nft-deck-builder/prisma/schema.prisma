@@ -17,4 +17,12 @@ model Titan {
   id        Int     @id @default(autoincrement())
   name      String
   image_url String?
+  synergies Synergy[]
+}
+
+model Synergy {
+  id        Int     @id @default(autoincrement())
+  name      String
+  image_url String?
+  titans    Titan[]
 }

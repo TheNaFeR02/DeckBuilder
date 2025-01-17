@@ -5,42 +5,135 @@ const prisma = new PrismaClient()
 const { utapi } = require("../app/server/uploadthing/uploadthing");
 
 
+// Name	Image	Cost	Synergy 1	Synergy 2	Synergy 3
+// GEARZ		0			
+// ASRA			1	Desert	Demon	
+// AUROR		1	Magma	Caster	
+// DAPPER		1	Oceanic	Shooter	
+// EMPEROR		1	Humanoid	Guardian	
+// FLYNT		1	Forest	Greedy	
+// MOONBEAN		1	Forest	Spirit	
+// PINESCAR		1	Forest	Shieldmaiden	
+// SPARK		1	Magma	Assassin	
+// STALAK		1	Arctic	Weapons Master	
+// ZABU			1	Electric	Weapons Master	
+// BERO			2	Magma	Guardian	
+// FLAKY		2	Forest	Indomitable	
+// GARRARD		2	Oceanic	Greedy	
+// JAECHIRAS	2	Arctic	Demon	
+// K2			2	Electric	Shieldmaiden	
+// KHEPRI		2	Desert	Shooter	
+// ORCHID		2	Forest	Spirit	
+// SYLON		2	Forest	Weapons Master	Holy
+// UKIR			2	Arctic	Shooter	Demon
+// ZERO			2	Humanoid	Greedy	
+// GOOHOO		3	Arctic	Assassin	Indomitable
+// AWON			3	Oceanic	Indomitable	
+// BRIGHT		3	Electric	Demon	
+// HELI			3	Oceanic	Spirit	
+// KUGO			3	Electric	Caster	
+// MALHAAG		4	Desert	Demon	
+// NALENA		3	Oceanic	Caster	
+// TANKO		3	Magma	Demon	
+// VOLUNDR		3	Magma	Weapons Master	
+// WHISPER		3	Humanoid	Assassin	
+// CLOCKS		4	Arctic	Guardian	
+// FYRE			4	Magma	Greedy	Spirit
+// KALAMIS		4	Arctic	Weapons Master	
+// KOR			4	Arctic	Shieldmaiden	
+// MANETHO		4	Desert	Indomitable	Guardian
+// OKEANOS		4	Oceanic	Guardian	
+// UTAG			4	Humanoid	Demon	Weapons Master
+// GAIA			5	Forest	Caster	
+// KARN			5	Humanoid	Guardian	
+// MAEL			5	Magma	Holy	Shieldmaiden
+// MORAY		5	Oceanic	Demon	Weapons Master
+// PROTONN		5	Electric	Shooter	
+// SEMET		5	Desert	Assassin
+
+const info = [
+	{ id: 53, name: 'WHISPER', synergies: ["Humanoid", "Assassin"] },
+	{ id: 54, name: 'TANKO', synergies: ["Magma", "Demon"] },
+	{ id: 55, name: 'JAECHIRAS', synergies: ["Arctic", "Demon"] },
+	{ id: 56, name: 'PINESCAR', synergies: ["Forest", "Shieldmaiden"] },
+	{ id: 57, name: 'GEARZ', synergies: [] },
+	{ id: 58, name: 'KHEPRI', synergies: ["Desert", "Shooter"] },
+	{ id: 59, name: 'VOLUNDR', synergies: ["Magma", "Weapons Master"] },
+	{ id: 60, name: 'KUGO', synergies: ["Electric", "Caster"] },
+	{ id: 61, name: 'NALENA', synergies: ["Oceanic", "Caster"] },
+	{ id: 46, name: 'UKIR', synergies: ["Arctic", "Shooter", "Demon"] },
+	{ id: 47, name: 'MOONBEAN', synergies: ["Forest", "Spirit"] },
+	{ id: 48, name: 'KARN', synergies: ["Humanoid", "Guardian"] },
+	{ id: 49, name: 'KOR', synergies: ["Arctic", "Shieldmaiden"] },
+	{ id: 50, name: 'PROTONN', synergies: ["Electric", "Shooter"] },
+	{ id: 51, name: 'SYLON', synergies: ["Forest", "Weapons Master", "Holy"] },
+	{ id: 52, name: 'ZERO', synergies: ["Humanoid", "Greedy"] },
+	{ id: 62, name: 'MALHAAG', synergies: ["Desert", "Demon"] },
+	{ id: 63, name: 'ORCHID', synergies: ["Forest", "Spirit"] },
+	{ id: 64, name: 'SPARK', synergies: ["Magma", "Assassin"] },
+	{ id: 65, name: 'MANETHO', synergies: ["Desert", "Indomitable", "Guardian"] },
+	{ id: 66, name: 'K2', synergies: ["Electric", "Shieldmaiden"] },
+	{ id: 67, name: 'STALAK', synergies: ["Arctic", "Weapons Master"] },
+	{ id: 68, name: 'SEMET', synergies: ["Desert", "Assassin"] },
+	{ id: 69, name: 'ZABU', synergies: ["Electric", "Weapons Master"] },
+	{ id: 70, name: 'MAEL', synergies: ["Magma", "Holy", "Shieldmaiden"] },
+	{ id: 71, name: 'UTAG', synergies: ["Humanoid", "Demon", "Weapons Master"] },
+	{ id: 72, name: 'KALAMIS', synergies: ["Arctic", "Weapons Master"] },
+	{ id: 73, name: 'MORAY', synergies: ["Oceanic", "Demon", "Weapons Master"] },
+	{ id: 74, name: 'OKEANOS', synergies: ["Oceanic", "Guardian"] },
+	{ id: 75, name: 'EMPEROR', synergies: ["Humanoid", "Guardian"] },
+	{ id: 76, name: 'FLYNT', synergies: ["Forest", "Greedy"] },
+	{ id: 77, name: 'BERO', synergies: ["Magma", "Guardian"] },
+	{ id: 78, name: 'HELI', synergies: ["Oceanic", "Spirit"] },
+	{ id: 79, name: 'GAIA', synergies: ["Forest", "Caster"] },
+	{ id: 80, name: 'CLOCKS', synergies: ["Arctic", "Guardian"] },
+	{ id: 81, name: 'DAPPER', synergies: ["Oceanic", "Shooter"] },
+	{ id: 82, name: 'AWON', synergies: ["Oceanic", "Indomitable"] },
+	{ id: 83, name: 'FYRE', synergies: ["Magma", "Greedy", "Spirit"] },
+	{ id: 84, name: 'BRIGHT', synergies: ["Electric", "Demon"] },
+	{ id: 85, name: 'GOOHOO', synergies: ["Arctic", "Assassin", "Indomitable"] },
+	{ id: 86, name: 'FLAKY', synergies: ["Forest", "Indomitable"] },
+	{ id: 87, name: 'GARRARD', synergies: ["Oceanic", "Greedy"] },
+	{ id: 88, name: 'ASRA', synergies: ["Desert", "Demon"] },
+	{ id: 89, name: 'AUROR', synergies: ["Magma", "Caster"] }
+]
+
+
 async function main() {
-	// files: [
-	// 	{
-	// 	  id: 'f926d48b-15ed-41da-997a-f1a5104fe18c',
-	// 	  customId: null,
-	// 	  key: 'AA3xkTQET8So7YjT83iKPQh51auw7ytczNvCpMeLqHZO0nX9',
-	// 	  name: 'UKIR.png',
-	// 	  size: 1049450,
-	// 	  status: 'Uploaded',
-	// 	  uploadedAt: 1736880469000
-	// 	},
-	// 	{
-	// 	  id: 'dbb3d420-6b61-477a-8541-c52d92f6b8e7',
-	// 	  customId: null,
-	// 	  key: 'AA3xkTQET8So6XBoUf7mzgcx40Chv2prAtTlbN3V5ZdjXsDo',
-	// 	  name: 'MOONBEAN.png',
-	// 	  size: 767162,
-	// 	  status: 'Uploaded',
-	// 	  uploadedAt: 1736880469000
-	// 	},
 
-	const APP_ID = "jy37vuigv8"
+	const _titanId_synergy = {
 
-	const {files} = await utapi.listFiles();
+	}
 
-	for (const file of files) {
+	const titans = await prisma.titan.findMany()
 
-        const titan = await prisma.titan.create({
-            data: {
-                name: file.name,
-                image_url: `https://${APP_ID}.ufs.sh/f/${file.key}`
-            }
-        })
+	const synergies = await prisma.synergy.findMany()
 
-        console.log(`Updated titan: ${titan}`);
-    }
+	for (const titan of titans) {
+		const synergies_of_titan = info.find(_info => _info.id === titan.id)?.synergies || [];
+		// console.log(`Titan ID: ${titan.id}, Synergies: ${synergies_of_titan}`);
+
+		// console.log(synergies_of_titan)
+
+		let synergiesId = []
+		synergies_of_titan.forEach((synergy) => {
+			const synergyId = synergies.find(_ => _.name === synergy)?.id;
+			if (synergyId) {
+				synergiesId.push({ id: synergyId });
+			}
+		});
+
+		await prisma.titan.update({
+			where: { id: titan.id },
+			data: {
+				synergies: {
+					connect: synergiesId
+				}
+			}
+		})
+	}
+
+
 
 }
 
