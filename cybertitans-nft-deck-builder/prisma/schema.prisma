@@ -25,4 +25,5 @@ model Synergy {
   name      String
   image_url String?
   titans    Titan[]
+  maxBonus  Int?
 }

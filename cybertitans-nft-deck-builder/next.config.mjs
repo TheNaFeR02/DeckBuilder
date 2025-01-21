@@ -6,9 +6,13 @@ const nextConfig = {
             hostname: "img.daisyui.com"
         },
         {
+            protocol: "https",
             hostname: "jy37vuigv8.ufs.sh",
+            port: "",
+            pathname: "/f/**",
+            search: ""
         }
-    ]
+    ],
     }
 };
 
