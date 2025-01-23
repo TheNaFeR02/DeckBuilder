@@ -1,11 +1,11 @@
 // import { Draggable } from "@/app/_board/titan-card"
 import Image from "next/image"
-import { Draggable } from "../_board/titan-card"
+import { TitanCardDraggable } from "../_board/titan-card"
 
 
 // Takes the info of a titan and converts it into a Draggable Card.
 export function titanCard(image, name, id, titanId) {
-  return <Draggable id={titanId} titanId={titanId}>
+  return <TitanCardDraggable id={titanId} titanId={titanId} titanName={name}>
     <figure className="relative w-full h-full">
       <Image
         className="object-cover border-solid border-white border-2 rounded-md"
@@ -18,5 +18,5 @@ export function titanCard(image, name, id, titanId) {
       <div className="text-black absolute top-0 left-0.5">$1</div>
       <p className="text-white absolute bottom-2 left-1 text-sm">{name}</p>
     </figure>
-  </Draggable>
+  </TitanCardDraggable>
 }

@@ -1,21 +1,20 @@
 "use client"
-import { prisma } from "@/client"
 import Image from "next/image"
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { useEffect, useState } from "react"
-import { Draggable } from "./_board/titan-card";
 import { Droppable } from "./_board/deck-slot";
-import { titanCard } from "@/app/utils/titan-card"
+import { ItemDraggable } from "./_board/item";
 
-
-// dummy data
-// const titans = [
-//   { id: 0, image_url: "/image25.png", name: "Titan 0" },
-//   { id: 1, image_url: "/image25.png", name: "Titan 1" },
-//   { id: 2, image_url: "/image25.png", name: "Titan 2" },
-// ]
-const _image = "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SoHS6Sf20M6p0CnQ2ReoOIiXVslaGPASKD5NJd"
-
+const red = 'invert(22%) sepia(96%) saturate(5375%) hue-rotate(355deg) brightness(92%) contrast(121%)'
+const blue = 'invert(8%) sepia(100%) saturate(7230%) hue-rotate(248deg) brightness(95%) contrast(144%)'
+const yellow = 'invert(97%) sepia(56%) saturate(2855%) hue-rotate(333deg) brightness(101%) contrast(102%)'
+const raygun = "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SoSFPZW6K3v92ZMKfQFXw67dA1tHjUTIL5ycDO"
+// temp items
+const itemsData = {
+  "item.raygun-1": <ItemDraggable id={"item.raygun-1"} size={45} image_url={raygun} color={red} />,
+  "item.raygun-2": <ItemDraggable id={"item.raygun-2"} size={45} image_url={raygun} color={blue} />,
+  "item.raygun-3": <ItemDraggable id={"item.raygun-3"} size={45} image_url={raygun} color={yellow} />
+}
 
 export default function DeckBuilder({
   titans,
@@ -24,10 +23,32 @@ export default function DeckBuilder({
   const [board, setBoard] = useState(Array(32).fill(null)); // board would be a better name
   const [deck, setDeck] = useState(titanCards); // array of ids of the titans in the deck
   const [currentDraggableId, setCurrentDraggableId] = useState(null); // null || id of the draggable being dragged.
-  const [draggedItem, setDraggedItem] = useState(null);
+  const [draggedCard, setDraggedCard] = useState(null);
+  const [draggedItem, setDraggedItem] = useState(null)
   const [synergies, setSynergies] = useState({ "oceanic": 0, "forest": 0, "magma": 0, "desert": 0, "humanoid": 0, "electric": 0, "arctic": 0, "holy": 0, "demon": 0, "spirit": 0, "indomitable": 0, "caster": 0, "shooter": 0, "weaponsMaster": 0, "guardian": 0, "assassin": 0, "shieldmaiden": 0, "greedy": 0 })
   const [currentDraggableTitanId, setCurrentDraggableTitanId] = useState(null)
+  const [nameFilter, setNameFilter] = useState("")
+  const [items, setItems] = useState(itemsData)
+  const [itemsBoardSlots, setItemsBoardSlots] = useState(Array(32).fill([]))
 
+
+  useEffect(() => {
+    setItemsBoardSlots((prev) => {
+      const newSlots = prev.map(slot => [...slot]); // Create a deep copy of the nested arrays
+      newSlots[1] = [...newSlots[1], itemsData["item.raygun-1"]]; // Add item to the second array
+      console.log("newSlots", newSlots);
+      return newSlots;
+    })
+  }, [])
+
+  // useEffect(()=>{
+  //   console.log(itemsBoardSlots)
+  // })
+
+  function handleDragEndItem(itemId) {
+    console.log(itemId)
+    
+  }
 
   function handleDragEnd(event) {
     const { over } = event; // null if not over a droppable or the droppable id if it is over a droppable.
@@ -38,11 +59,21 @@ export default function DeckBuilder({
     }
 
     // 2. if the draggable is over a droppable, we need to check if the droppable is the deck of cards or a slot on the board.
+    // Now a titan card could be a droppable as well since they can have items.
     const droppableSelected = over.id
+
+    console.log(droppableSelected)
+
+    if (currentDraggableId.startsWith("item.")) {
+      handleDragEndItem(currentDraggableId)
+      return
+    }
+
+    // TITAN CARD DRAGGABLE CARD HANDLER ↓
 
     // 3. if the droppable is not the deck of cards and the slot on the board is already occupied, we don't need to do anything.
     if (droppableSelected !== '_deck' && board[droppableSelected] !== null) {
-      return
+      return;
     }
 
     setBoard((prevBoard) => {
@@ -84,7 +115,6 @@ export default function DeckBuilder({
         const newDeck = [...prevBoard]
         newDeck[pos] = null
         return newDeck
-
       }
 
       // 5. if the droppable is a slot on the board. the card could be already on the board or not.
@@ -127,19 +157,24 @@ export default function DeckBuilder({
 
     setCurrentDraggableTitanId(null)
     setCurrentDraggableId(null);
-    setDraggedItem(null);
+    setDraggedCard(null);
 
-
+    setDraggedItem(null)
   }
 
   function handleDragStart(event) {
     const { active } = event;
     // console.log(active)
 
-    // active.id is the id of the draggable (titan card) being dragged.
-    setCurrentDraggableTitanId(active.data.current.titanId)
     setCurrentDraggableId(active.id.toString());
-    setDraggedItem(titanCards[active.id.toString()]);
+    setDraggedItem(items[active.id.toString()])
+
+    // active.id is the id of the draggable (titan card/item) being dragged.
+    // We check if it's not an item.
+    if (!active.id.toString().startsWith("item.")) {
+      setCurrentDraggableTitanId(active.data.current.titanId)
+      setDraggedCard(titanCards[active.id.toString()]);
+    }
 
   }
 
@@ -465,40 +500,91 @@ export default function DeckBuilder({
           <div className="grid grid-cols-8 gap-2 w-[592px] h-[360px] border-solid rounded-md">
             {board.map((item, index) => (
               <Droppable id={index} key={index}>
-                <div className="h-[80px] w-[70px] border-solid border-2 border-neutral rounded-md ">
-                  {/* deck[index] is the id of the Draggable element that is on that deck slot */}
+                <div className="h-[80px] w-[70px] relative border-solid border-2 border-neutral rounded-md flex justify-end items-end">
                   {/* board[index] -> titanId */}
                   {board[index] !== null ? titanCards[board[index].toString()] : null}
+                  <div className="bg-neutral w-14 h-5 absolute -bottom-2.5 rounded-sm ">
+                    <Droppable id={`item.slot.${index}`}>
+                      <div className="flex relative justify-center items-center">
+                        {itemsBoardSlots[index].map((item, itemIndex) => (
+                          <div key={itemIndex} className="w-7 h-7">{item}</div>
+                        ))}
+                      </div>
+                    </Droppable>
+                  </div>
                 </div>
               </Droppable>
             ))}
           </div>
           {/* Board end */}
+
+          {/* Items */}
+          <div className="flex flex-wrap relative">
+            <div className="grid grid-cols-3 gap-2 border-2 border-solid absolute -right-48 w-48 h-[360px] overflow-y-scroll overflow-x-hidden">
+              {Object.entries(items).map(([key, value]) => (
+                value != null ? <div key={key}>{value}</div> : null
+              ))}
+            </div>
+          </div>
+          {/* Items end */}
         </div>
 
-
         {/* Deck: (Draggable Titans cards) */}
-
-
         <Droppable id="_deck">
-          <div className="flex flex-wrap gap-3 bg-neutral w-[592px] h-[360px] rounded-md p-1 overflow-y-scroll">
-            {Object.entries(deck).map(([key, value]) => (
-              value != null ? <div key={key}>{value}</div> : null
-            ))}
-            {/* {deck.map((id, index) => (
-              deck[index] !== null ? <div key={index}  >{
 
-                titanCards[deck[index].toString()]
+          <div role="tablist" className="tabs tabs-lifted relative">
+            <label className="input input-bordered absolute right-0 -top-6 flex items-center"
+            >
+              <input type="text" className="grow" placeholder="Search"
+                onChange={(e) => setNameFilter(e.target.value)}
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4 opacity-70">
+                <path
+                  fillRule="evenodd"
+                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                  clipRule="evenodd" />
+              </svg>
+            </label>
 
-              }</div> : null
-            ))} */}
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="All" defaultChecked />
+
+            <div role="tabpanel" className="tab-content  border-base-300 rounded-box p-3">
+              <div className="flex flex-wrap gap-3 bg-neutral w-[570px] h-[360px] rounded-md p-1 overflow-y-scroll border-0">
+                {nameFilter === "" ? (
+                  Object.entries(deck).map(([key, value]) => (
+                    value != null ? <div key={key}>{value}</div> : null
+                  ))
+                )
+                  :
+                  (
+                    Object.entries(deck).map(([key, value]) => (
+                      value != null && value.props.titanName.toLowerCase().includes(nameFilter.toLocaleLowerCase()) ? <div key={key}>{value}</div> : null
+                    ))
+                  )}
+              </div>
+            </div>
+
+            {/* <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Tab 2" />
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+              Tab content 2
+            </div> */}
+
           </div>
+
         </Droppable>
         {/* Deck end */}
 
         <DragOverlay>
+          {draggedCard ? draggedCard : null}
           {draggedItem ? draggedItem : null}
         </DragOverlay>
+
+
+
 
 
       </div>
@@ -506,23 +592,6 @@ export default function DeckBuilder({
   );
 }
 
-// 1. titans from the db
-// [
-// { id: 1, image: "/image25.png", name: "Titan 1" }, 
-// { id: 2, image: "/image25.png", name: "Titan 2" }, 
-// ...
-// ]
-
-// 2. Array of draggables: JSX Elements[]: titanCards. It converts the array of titans into an array of draggable components. This array is used as reference to render the draggable titans.
-// [<Draggable id={0}>, <Draggable id={2}>  , <Draggable id={3}> ...] current cards on the slots of the deck.
-
-// 3. Array of draggables: (deck): It can be more than 32 items
-// [0, 1, 2, 3, 4, 5, ... , 31] 32 items
-// every time an card is dragged to the board, it becomes null in that position.
-// ex: [0, 1, 2, 3, null, 5, ... , 31]
-
-// 4. Array of droppables: (board)
-// [null, null, ... , null] 32 items
 
 
 
