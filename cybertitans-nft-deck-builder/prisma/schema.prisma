@@ -27,3 +27,9 @@ model Synergy {
   titans    Titan[]
   maxBonus  Int?
 }
+
+model Item {
+  id        Int     @id @default(autoincrement())
+  name      String
+  image_url String? 
+}

@@ -101,39 +101,18 @@ const info = [
 
 async function main() {
 
-	const _titanId_synergy = {
+	const items = [
+		{ name: "Raygun",  image_url: "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SoSFPZW6K3v92ZMKfQFXw67dA1tHjUTIL5ycDO" },
+		{ name: "Rod", image_url: "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SoJSWOHy1ZLEeqcR3PFXQWyAHJNkUYKChdr9gv"},
+		{ name: "Extra Ammo", image_url: "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SoYvRkLrWDFkwLCsuWr8RaKA9V4eHdjQZt2NTb"},
+		{ name: "Battery", image_url: "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8So0HdmS4rxBHz2DemAUM6VbdcJWYr4XZITalF1" },
+		{ name: "Breastplate", image_url: "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SojMovycHdJovXN34lTg08kYDntiWc2Cpy7OjZ" },
+		{ name: "Force Field", image_url: "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SouM3WIEpBkEOAWb3DVa9ji4tNJMXGKHPQfYUh" }
+	]
 
-	}
-
-	const titans = await prisma.titan.findMany()
-
-	const synergies = await prisma.synergy.findMany()
-
-	for (const titan of titans) {
-		const synergies_of_titan = info.find(_info => _info.id === titan.id)?.synergies || [];
-		// console.log(`Titan ID: ${titan.id}, Synergies: ${synergies_of_titan}`);
-
-		// console.log(synergies_of_titan)
-
-		let synergiesId = []
-		synergies_of_titan.forEach((synergy) => {
-			const synergyId = synergies.find(_ => _.name === synergy)?.id;
-			if (synergyId) {
-				synergiesId.push({ id: synergyId });
-			}
-		});
-
-		await prisma.titan.update({
-			where: { id: titan.id },
-			data: {
-				synergies: {
-					connect: synergiesId
-				}
-			}
-		})
-	}
-
-
+	const _items = await prisma.item.createMany({
+		data: items
+	})	
 
 }
 

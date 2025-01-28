@@ -8,7 +8,6 @@ export function Droppable(props) {
 
     return (
         <div ref={setNodeRef}
-            // className="h-[80px] w-[70px] border-solid border-2 border-neutral rounded-md"
         >
             {props.children}
         </div>

@@ -10,15 +10,32 @@ const blue = 'invert(8%) sepia(100%) saturate(7230%) hue-rotate(248deg) brightne
 const yellow = 'invert(97%) sepia(56%) saturate(2855%) hue-rotate(333deg) brightness(101%) contrast(102%)'
 const raygun = "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SoSFPZW6K3v92ZMKfQFXw67dA1tHjUTIL5ycDO"
 // temp items
-const itemsData = {
-  "item.raygun-1": <ItemDraggable id={"item.raygun-1"} size={45} image_url={raygun} color={red} />,
-  "item.raygun-2": <ItemDraggable id={"item.raygun-2"} size={45} image_url={raygun} color={blue} />,
-  "item.raygun-3": <ItemDraggable id={"item.raygun-3"} size={45} image_url={raygun} color={yellow} />
-}
+// const itemsData = {
+//   "item.raygun-1": <ItemDraggable id={"item.raygun-1"} size={45} image_url={raygun} color={red} />,
+//   "item.raygun-2": <ItemDraggable id={"item.raygun-2"} size={45} image_url={raygun} color={blue} />,
+//   "item.raygun-3": <ItemDraggable id={"item.raygun-3"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-4": <ItemDraggable id={"item.raygun-4"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-5": <ItemDraggable id={"item.raygun-5"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-6": <ItemDraggable id={"item.raygun-6"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-7": <ItemDraggable id={"item.raygun-7"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-8": <ItemDraggable id={"item.raygun-8"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-9": <ItemDraggable id={"item.raygun-9"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-10": <ItemDraggable id={"item.raygun-10"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-11": <ItemDraggable id={"item.raygun-11"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-12": <ItemDraggable id={"item.raygun-12"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-13": <ItemDraggable id={"item.raygun-13"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-14": <ItemDraggable id={"item.raygun-14"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-15": <ItemDraggable id={"item.raygun-15"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-16": <ItemDraggable id={"item.raygun-16"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-17": <ItemDraggable id={"item.raygun-17"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-18": <ItemDraggable id={"item.raygun-18"} size={45} image_url={raygun} color={yellow} />,
+//   "item.raygun-19": <ItemDraggable id={"item.raygun-19"} size={45} image_url={raygun} color={yellow} />
+// }
 
 export default function DeckBuilder({
   titans,
-  titanCards
+  titanCards,
+  itemsData
 }) {
   const [board, setBoard] = useState(Array(32).fill(null)); // board would be a better name
   const [deck, setDeck] = useState(titanCards); // array of ids of the titans in the deck
@@ -32,22 +49,62 @@ export default function DeckBuilder({
   const [itemsBoardSlots, setItemsBoardSlots] = useState(Array(32).fill([]))
 
 
+  // useEffect(() => {
+  //   setItemsBoardSlots((prev) => {
+  //     const newSlots = prev.map(slot => [...slot]); // Create a deep copy of the nested arrays
+  //     newSlots[1] = [...newSlots[1], itemsData["item.raygun-1"]]; // Add item to the second array
+  //     console.log("newSlots", newSlots);
+  //     return newSlots;
+  //   })
+  // }, [])
+
   useEffect(() => {
-    setItemsBoardSlots((prev) => {
-      const newSlots = prev.map(slot => [...slot]); // Create a deep copy of the nested arrays
-      newSlots[1] = [...newSlots[1], itemsData["item.raygun-1"]]; // Add item to the second array
-      console.log("newSlots", newSlots);
+    console.log(itemsBoardSlots)
+  })
+
+  function handleDragEndItem(itemId, droppableSelected) {
+    // 2. Item is placed on the items list. 
+    // 2.1 From the same list - do nothing
+    // 2.2 From the board. 
+    setItems((prevItems) => ({
+      ...prevItems,
+      [itemId]: itemsData[itemId]
+    }))
+
+    setItemsBoardSlots((prevSlots) => {
+      const newSlots = prevSlots.map(slot => [...slot]); // Create a deep copy of the nested arrays
+      newSlots.forEach((slot, index) => {
+        const pos = slot.indexOf(itemsData[itemId]);
+        if (pos !== -1) {
+          newSlots[index].splice(pos, 1);
+        }
+      });
       return newSlots;
     })
-  }, [])
 
-  // useEffect(()=>{
-  //   console.log(itemsBoardSlots)
-  // })
+    if (droppableSelected === "_itemsList") {
+      console.log(droppableSelected)
+      return
+    }
+    // -------
 
-  function handleDragEndItem(itemId) {
-    console.log(itemId)
-    
+
+
+    // 3. Normal case: Drag item to slot
+    setItemsBoardSlots((prev) => {
+      const newSlots = prev.map(slot => [...slot]);
+      if (newSlots[droppableSelected].length < 3) {
+        console.log("entro");
+        newSlots[droppableSelected] = [...newSlots[droppableSelected], itemsData[itemId]];
+        setItems((prevItems) => ({
+          ...prevItems,
+          [itemId]: null
+        }));
+        return newSlots;
+      }
+      return prev;
+    });
+
   }
 
   function handleDragEnd(event) {
@@ -62,13 +119,12 @@ export default function DeckBuilder({
     // Now a titan card could be a droppable as well since they can have items.
     const droppableSelected = over.id
 
-    console.log(droppableSelected)
+    console.log("droppable selected", droppableSelected)
 
     if (currentDraggableId.startsWith("item.")) {
-      handleDragEndItem(currentDraggableId)
+      handleDragEndItem(currentDraggableId, droppableSelected)
       return
     }
-
     // TITAN CARD DRAGGABLE CARD HANDLER ↓
 
     // 3. if the droppable is not the deck of cards and the slot on the board is already occupied, we don't need to do anything.
@@ -186,7 +242,7 @@ export default function DeckBuilder({
       <div className="h-screen flex gap-10 justify-center flex-col items-center">
 
 
-        <div className="flex flex-wrap relative">
+        <div className="flex flex-wrap relative gap-3">
           {/* Synergies */}
           <div className="absolute -left-48 w-48 h-[360px] overflow-y-scroll overflow-x-hidden">
 
@@ -503,14 +559,14 @@ export default function DeckBuilder({
                 <div className="h-[80px] w-[70px] relative border-solid border-2 border-neutral rounded-md flex justify-end items-end">
                   {/* board[index] -> titanId */}
                   {board[index] !== null ? titanCards[board[index].toString()] : null}
-                  <div className="bg-neutral w-14 h-5 absolute -bottom-2.5 rounded-sm ">
-                    <Droppable id={`item.slot.${index}`}>
-                      <div className="flex relative justify-center items-center">
-                        {itemsBoardSlots[index].map((item, itemIndex) => (
-                          <div key={itemIndex} className="w-7 h-7">{item}</div>
-                        ))}
-                      </div>
-                    </Droppable>
+                  <div className="bg-neutral w-14 h-6 absolute -bottom-2.5 rounded-sm z-30">
+                    {/* <Droppable id={`item.slot.${index}`}> */}
+                    <div className="flex relative justify-center items-center">
+                      {itemsBoardSlots[index].map((item, itemIndex) => (
+                        <div key={itemIndex} className="w-7 h-7">{item}</div>
+                      ))}
+                    </div>
+                    {/* </Droppable> */}
                   </div>
                 </div>
               </Droppable>
@@ -519,13 +575,20 @@ export default function DeckBuilder({
           {/* Board end */}
 
           {/* Items */}
-          <div className="flex flex-wrap relative">
-            <div className="grid grid-cols-3 gap-2 border-2 border-solid absolute -right-48 w-48 h-[360px] overflow-y-scroll overflow-x-hidden">
-              {Object.entries(items).map(([key, value]) => (
-                value != null ? <div key={key}>{value}</div> : null
-              ))}
+          <div className="flex flex-wrap relative ">
+
+            <div className="absolute -right-48 w-48">
+              <Droppable id="_itemsList">
+                <div className="grid grid-cols-3 gap-2 border-2 border-solid border-neutral rounded-md h-[360px] overflow-y-scroll overflow-x-hidden">
+                  {Object.entries(items).map(([key, value]) => (
+                    value != null ? <div key={key}>{value}</div> : null
+                  ))}
+                </div>
+              </Droppable>
             </div>
+
           </div>
+
           {/* Items end */}
         </div>
 

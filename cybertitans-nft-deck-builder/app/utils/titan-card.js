@@ -12,6 +12,7 @@ export function titanCard(image, name, id, titanId) {
         src={image}
         alt={name}
         fill
+        sizes="(max-width: 600px) 70px, (max-width: 1200px) 70px, 70px"
         // sizes="(max-width: 1200px) " 
       />
       <div className="bg-white w-5 h-6 rounded-br-md  absolute top-0 rounded-tl-md  bottom-1"></div>

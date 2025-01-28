@@ -17,7 +17,9 @@ export function ItemDraggable({id, size, color, image_url}) {
         >
             <Image
                 style={{
-                    filter: color
+                    filter: color,
+                    height: "auto",
+                    width: "auto"
                 }}
                 src={image_url}
                 // CSS filter generator to convert from black to target hex color: https://codepen.io/sosuke/pen/Pjoqqp
@@ -25,7 +27,7 @@ export function ItemDraggable({id, size, color, image_url}) {
                 // #ff0000
                 width={size}
                 height={size}
-                alt="raygun-1"
+                alt={id}
             />
             {/* {children} */}
         </div>
