@@ -1,8 +1,8 @@
-import DeckBuilder from "./deck-builder";
-import { utapi } from "./server/uploadthing/uploadthing";
+import DeckBuilder from "../deck-builder";
+import { utapi } from "../server/uploadthing/uploadthing";
 import { prisma } from "@/client"
-import { titanCard } from "./utils/titan-card";
-import { ItemDraggable } from "./_board/item";
+import { titanCard } from "@/app/utils/titan-card";
+import { ItemDraggable } from "@/app/_board/item";
 
 const red = 'invert(22%) sepia(96%) saturate(5375%) hue-rotate(355deg) brightness(92%) contrast(121%)'
 const blue = 'invert(8%) sepia(100%) saturate(7230%) hue-rotate(248deg) brightness(95%) contrast(144%)'
@@ -26,7 +26,7 @@ export default async function Home(){
   let titansById = {}
   titans.forEach((titan, index) => {
     // console.log("imageurl", titan.image)
-    titanCards[titan.id] = titanCard(titan.image_url, titan.name, index, titan.id)
+    titanCards[titan.id] = titanCard(titan.image_url, titan.name, index, titan.id, titan.cost)
     titansById[titan.id] = titan;
   });
 

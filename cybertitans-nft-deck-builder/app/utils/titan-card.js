@@ -4,7 +4,7 @@ import { TitanCardDraggable } from "../_board/titan-card"
 
 
 // Takes the info of a titan and converts it into a Draggable Card.
-export function titanCard(image, name, id, titanId) {
+export function titanCard(image, name, id, titanId, cost) {
   return <TitanCardDraggable id={titanId} titanId={titanId} titanName={name}>
     <figure className="relative w-full h-full">
       <Image
@@ -16,7 +16,7 @@ export function titanCard(image, name, id, titanId) {
         // sizes="(max-width: 1200px) " 
       />
       <div className="bg-white w-5 h-6 rounded-br-md  absolute top-0 rounded-tl-md  bottom-1"></div>
-      <div className="text-black absolute top-0 left-0.5">$1</div>
+      <div className="text-black absolute top-0 left-0.5">${cost}</div>
       <p className="text-white absolute bottom-2 left-1 text-sm">{name}</p>
     </figure>
   </TitanCardDraggable>

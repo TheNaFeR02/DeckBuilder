@@ -17,6 +17,7 @@ model Titan {
   id        Int     @id @default(autoincrement())
   name      String
   image_url String?
+  cost      Int?
   synergies Synergy[]
 }
 

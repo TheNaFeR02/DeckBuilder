@@ -11,6 +11,11 @@ const nextConfig = {
             port: "",
             pathname: "/f/**",
             search: ""
+        },
+        {
+            protocol: "https",
+            hostname: "dex-bin.bnbstatic.com",
+            pathname: "/static/dapp-uploads/1lalKyaw4nxafPLQMCRzC"
         }
     ],
     }
