@@ -49,16 +49,13 @@ export default function DeckBuilder({
   const [itemsBoardSlots, setItemsBoardSlots] = useState(Array(32).fill([]))
 
 
+  // crystals counter
+  const [lethal, setLethal] = useState(1)
+  const [ultimate, setUltimate] = useState(1)
+  const [fortune, setFortune] = useState(1)
 
 
-  // useEffect(() => {
-  //   setItemsBoardSlots((prev) => {
-  //     const newSlots = prev.map(slot => [...slot]); // Create a deep copy of the nested arrays
-  //     newSlots[1] = [...newSlots[1], itemsData["item.raygun-1"]]; // Add item to the second array
-  //     console.log("newSlots", newSlots);
-  //     return newSlots;
-  //   })
-  // }, [])
+
 
   useEffect(() => {
     console.log(itemsBoardSlots)
@@ -611,7 +608,7 @@ export default function DeckBuilder({
         </div>
 
         {/* Deck: (Draggable Titans cards) */}
-        <Droppable id="_deck">
+        <Droppable id="_deck" className="fer">
 
           <div role="tablist" className="tabs tabs-lifted relative">
             <label className="input input-bordered absolute right-0 -top-6 flex items-center"
@@ -654,10 +651,83 @@ export default function DeckBuilder({
               Tab content 2
             </div> */}
 
+            <div className="absolute border-2 border-neutral w-48 h-72 top-10 -right-52 rounded-md">
+              <div className="border-b border-neutral w-full h-1/3 flex justify-center flex-col">
+                <div className=" flex justify-between w-full h-1/3 px-3 pt-3">
+                  <div><p className="pl-2">Lethal</p></div>
+                  <div className="tooltip" 
+                  data-tip={`
+                    ${lethal === 1 ? 'All allied Titans get:- 200 Health - 10 Damage - 10 Cyber Damage' : ''}
+                    ${lethal === 2 ? 'All allied Titans get:- 400 Health - 25 Damage - 25 Cyber Damage' : ''}
+                    ${lethal === 3 ? 'All allied Titans get: - 800 Health - 55 Damage - 55 Cyber Damage - 25% Attack Speed' : ''}
+                    `}><button>？</button></div>
+                </div>
+                <div onClick={() => lethal < 3 ? setLethal(lethal + 1) : setLethal(1)} className="h-2/3 flex justify-center items-center cursor-pointer">
+                  <Image
+                    src={"https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SosUepbAqTWUSK2JEixcptvqBydGCjl5aP63RN"}
+                    alt="lethal"
+                    width={40}
+                    height={40}
+                  />
+                  <div ><p>{lethal}</p></div>
+                </div>
+              </div>
+              <div className="border-b border-neutral w-full h-1/3 flex justify-center flex-col cursor-pointer">
+
+                <div className=" flex justify-between w-full h-1/3 px-3 pt-3">
+                  <div><p className="pl-2">Ultimate</p></div>
+                  <div className="tooltip"
+                  data-tip={`
+                    ${ultimate === 1 ? 'All allied Titans get - 2% Max Health restore per second - 2% Max Charge restore per second' : ''}
+                    ${ultimate === 2 ? 'All allied Titans get - 4% Max Health restore per second - 4% Max Charge restore per second' : ''}
+                    ${ultimate === 3 ? 'All allied Titans get - 9% Max Health restore per second - 9% Max Charge restore per second - 25% Attack Speed' : ''}
+                  `} 
+                  ><button>？</button></div>
+                </div>
+                <div onClick={() => ultimate < 3 ? setUltimate(ultimate + 1) : setUltimate(1)} className="h-2/3 flex justify-center items-center">
+                  <Image
+                    src={"https://jy37vuigv8.ufs.sh/f/AA3xkTQET8Sor55bI8A8KJ9tlvuHNaxjn3YTIi6pLDkz4BGP"}
+                    alt="ultimate"
+                    width={40}
+                    height={40}
+                  />
+                  <div className=""><p>{ultimate}</p></div>
+                </div>
+
+              </div>
+
+              <div className="border-b border-neutral w-full h-1/3 flex justify-center flex-col cursor-pointer" >
+
+                <div className=" flex justify-between w-full h-1/3 px-3 pt-3">
+                  <div><p className="pl-2">Fortune</p></div>
+                  <div className="tooltip" data-tip={`
+                    ${fortune === 1 ? '- 1 Extra Titan on the field' : ''}
+                    ${fortune === 2 ? '- 25 coins - 2 random Items' : ''}
+                    ${fortune === 3 ? '- The player gets +3 health - All enemy players get -3 health' : ''}
+                  `}>
+                    <button>？</button></div>
+                </div>
+                <div onClick={() => fortune < 3 ? setFortune(fortune + 1) : setFortune(1)}
+                  className="h-2/3 flex justify-center items-center">
+                  <Image
+                    src={"https://jy37vuigv8.ufs.sh/f/AA3xkTQET8So4FYitgLAaMHXiFszTCKRWflpJGu5ODeQNEgd"}
+                    alt="ultimate"
+                    width={40}
+                    height={40}
+                  />
+                  <div className=""><p>{fortune}</p></div>
+                </div>
+              </div>
+            </div>
           </div>
+
+
 
         </Droppable>
         {/* Deck end */}
+
+
+
 
         <DragOverlay>
           {draggedCard ? draggedCard : null}
