@@ -49,6 +49,8 @@ export default function DeckBuilder({
   const [itemsBoardSlots, setItemsBoardSlots] = useState(Array(32).fill([]))
 
 
+
+
   // useEffect(() => {
   //   setItemsBoardSlots((prev) => {
   //     const newSlots = prev.map(slot => [...slot]); // Create a deep copy of the nested arrays
@@ -66,6 +68,7 @@ export default function DeckBuilder({
     // 2. Item is placed on the items list. 
     // 2.1 From the same list - do nothing
     // 2.2 From the board. 
+
     setItems((prevItems) => ({
       ...prevItems,
       [itemId]: itemsData[itemId]
@@ -77,6 +80,13 @@ export default function DeckBuilder({
         const pos = slot.indexOf(itemsData[itemId]);
         if (pos !== -1) {
           newSlots[index].splice(pos, 1);
+
+          // If the item was a synergy and placed back in the list, we subtract the two +2 points.
+          const _synergy = itemId.split(".")[1]
+          setSynergies((prevSynergies) => ({
+            ...prevSynergies,
+            [_synergy.toLowerCase()]: (prevSynergies[_synergy.toLowerCase()] || 0) - 2
+          }))
         }
       });
       return newSlots;
@@ -100,7 +110,14 @@ export default function DeckBuilder({
           ...prevItems,
           [itemId]: null
         }));
-        
+
+        // In case the item was a synergy we need to add +2 points to the synergies on the board.
+        const _synergy = itemId.split(".")[1]
+        setSynergies((prevSynergies) => ({
+          ...prevSynergies,
+          [_synergy.toLowerCase()]: (prevSynergies[_synergy.toLowerCase()] || 0) + 2
+        }))
+
         return newSlots;
       }
       return prev;

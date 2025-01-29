@@ -34,11 +34,11 @@ export default async function Home(){
 
   let itemsData = {}
   items.forEach((item, index) => {
-    console.log(item.upgrade_A)
     itemsData[`item.${item.name.toLowerCase()}-1`] = <ItemDraggable id={`item.${item.name.toLowerCase()}-1`} size={45} image_url={item.image_url} color={red} description={item.description} upgrade={item.upgrade_A} />,
     itemsData[`item.${item.name.toLowerCase()}-2`] = <ItemDraggable id={`item.${item.name.toLowerCase()}-2`} size={45} image_url={item.image_url} color={blue}  description={item.description} upgrade={item.upgrade_B} />,
     itemsData[`item.${item.name.toLowerCase()}-3`] = <ItemDraggable id={`item.${item.name.toLowerCase()}-3`} size={45} image_url={item.image_url} color={yellow}  description={item.description} upgrade={item.upgrade_C}/>
   })
+
 
   const synergies = await prisma.synergy.findMany()
 
