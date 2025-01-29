@@ -32,4 +32,8 @@ model Item {
   id        Int     @id @default(autoincrement())
   name      String
   image_url String? 
+  description String?
+  upgrade_A String?
+  upgrade_B String?
+  upgrade_C String?
 }

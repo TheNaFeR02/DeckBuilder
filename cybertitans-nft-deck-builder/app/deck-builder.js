@@ -100,6 +100,7 @@ export default function DeckBuilder({
           ...prevItems,
           [itemId]: null
         }));
+        
         return newSlots;
       }
       return prev;
@@ -121,7 +122,7 @@ export default function DeckBuilder({
 
     console.log("droppable selected", droppableSelected)
 
-    if (currentDraggableId.startsWith("item.")) {
+    if (currentDraggableId.startsWith("item.") && droppableSelected !== '_deck') {
       handleDragEndItem(currentDraggableId, droppableSelected)
       return
     }
@@ -575,13 +576,13 @@ export default function DeckBuilder({
           {/* Board end */}
 
           {/* Items */}
-          <div className="flex flex-wrap relative ">
+          <div className="flex flex-wrap relative">
 
             <div className="absolute -right-48 w-48">
               <Droppable id="_itemsList">
-                <div className="grid grid-cols-3 gap-2 border-2 border-solid border-neutral rounded-md h-[360px] overflow-y-scroll overflow-x-hidden">
+                <div className="relative grid grid-cols-3 gap-2 border-2 border-solid border-neutral rounded-md h-[360px] overflow-y-scroll overflow-x-hidden">
                   {Object.entries(items).map(([key, value]) => (
-                    value != null ? <div key={key}>{value}</div> : null
+                    value != null ? <div key={key} className="relative w-[60px] h-[60px] flex items-center justify-center">{value}</div> : null
                   ))}
                 </div>
               </Droppable>
