@@ -99,73 +99,88 @@ const info = [
 ]
 
 
-async function main() {
-	const titanPrices = [
-		{ name: 'GEARZ', cost: 0 },
-		{ name: 'ASRA', cost: 1 },
-		{ name: 'AUROR', cost: 1 },
-		{ name: 'DAPPER', cost: 1 },
-		{ name: 'EMPEROR', cost: 1 },
-		{ name: 'FLYNT', cost: 1 },
-		{ name: 'MOONBEAN', cost: 1 },
-		{ name: 'PINESCAR', cost: 1 },
-		{ name: 'SPARK', cost: 1 },
-		{ name: 'STALAK', cost: 1 },
-		{ name: 'ZABU', cost: 1 },
-		{ name: 'BERO', cost: 2 },
-		{ name: 'FLAKY', cost: 2 },
-		{ name: 'GARRARD', cost: 2 },
-		{ name: 'JAECHIRAS', cost: 2 },
-		{ name: 'K2', cost: 2 },
-		{ name: 'KHEPRI', cost: 2 },
-		{ name: 'ORCHID', cost: 2 },
-		{ name: 'SYLON', cost: 2 },
-		{ name: 'UKIR', cost: 2 },
-		{ name: 'ZERO', cost: 2 },
-		{ name: 'GOOHOO', cost: 3 },
-		{ name: 'AWON', cost: 3 },
-		{ name: 'BRIGHT', cost: 3 },
-		{ name: 'HELI', cost: 3 },
-		{ name: 'KUGO', cost: 3 },
-		{ name: 'MALHAAG', cost: 4 },
-		{ name: 'NALENA', cost: 3 },
-		{ name: 'TANKO', cost: 3 },
-		{ name: 'VOLUNDR', cost: 3 },
-		{ name: 'WHISPER', cost: 3 },
-		{ name: 'CLOCKS', cost: 4 },
-		{ name: 'FYRE', cost: 4 },
-		{ name: 'KALAMIS', cost: 4 },
-		{ name: 'KOR', cost: 4 },
-		{ name: 'MANETHO', cost: 4 },
-		{ name: 'OKEANOS', cost: 4 },
-		{ name: 'UTAG', cost: 4 },
-		{ name: 'GAIA', cost: 5 },
-		{ name: 'KARN', cost: 5 },
-		{ name: 'MAEL', cost: 5 },
-		{ name: 'MORAY', cost: 5 },
-		{ name: 'PROTONN', cost: 5 },
-		{ name: 'SEMET', cost: 5 }
-	  ];
+// async function main() {
+// 	const titanPrices = [
+// 		{ name: 'GEARZ', cost: 0 },
+// 		{ name: 'ASRA', cost: 1 },
+// 		{ name: 'AUROR', cost: 1 },
+// 		{ name: 'DAPPER', cost: 1 },
+// 		{ name: 'EMPEROR', cost: 1 },
+// 		{ name: 'FLYNT', cost: 1 },
+// 		{ name: 'MOONBEAN', cost: 1 },
+// 		{ name: 'PINESCAR', cost: 1 },
+// 		{ name: 'SPARK', cost: 1 },
+// 		{ name: 'STALAK', cost: 1 },
+// 		{ name: 'ZABU', cost: 1 },
+// 		{ name: 'BERO', cost: 2 },
+// 		{ name: 'FLAKY', cost: 2 },
+// 		{ name: 'GARRARD', cost: 2 },
+// 		{ name: 'JAECHIRAS', cost: 2 },
+// 		{ name: 'K2', cost: 2 },
+// 		{ name: 'KHEPRI', cost: 2 },
+// 		{ name: 'ORCHID', cost: 2 },
+// 		{ name: 'SYLON', cost: 2 },
+// 		{ name: 'UKIR', cost: 2 },
+// 		{ name: 'ZERO', cost: 2 },
+// 		{ name: 'GOOHOO', cost: 3 },
+// 		{ name: 'AWON', cost: 3 },
+// 		{ name: 'BRIGHT', cost: 3 },
+// 		{ name: 'HELI', cost: 3 },
+// 		{ name: 'KUGO', cost: 3 },
+// 		{ name: 'MALHAAG', cost: 4 },
+// 		{ name: 'NALENA', cost: 3 },
+// 		{ name: 'TANKO', cost: 3 },
+// 		{ name: 'VOLUNDR', cost: 3 },
+// 		{ name: 'WHISPER', cost: 3 },
+// 		{ name: 'CLOCKS', cost: 4 },
+// 		{ name: 'FYRE', cost: 4 },
+// 		{ name: 'KALAMIS', cost: 4 },
+// 		{ name: 'KOR', cost: 4 },
+// 		{ name: 'MANETHO', cost: 4 },
+// 		{ name: 'OKEANOS', cost: 4 },
+// 		{ name: 'UTAG', cost: 4 },
+// 		{ name: 'GAIA', cost: 5 },
+// 		{ name: 'KARN', cost: 5 },
+// 		{ name: 'MAEL', cost: 5 },
+// 		{ name: 'MORAY', cost: 5 },
+// 		{ name: 'PROTONN', cost: 5 },
+// 		{ name: 'SEMET', cost: 5 }
+// 	  ];
 	
 	
-	  for (const titan of titanPrices) {
-		await prisma.titan.updateMany({
-		  where: { name: titan.name },
-		  data: { cost: titan.cost }
-		});
-	  }	
+// 	  for (const titan of titanPrices) {
+// 		await prisma.titan.updateMany({
+// 		  where: { name: titan.name },
+// 		  data: { cost: titan.cost }
+// 		});
+// 	  }	
 
-	// const titans = await prisma.titan.findMany()
+// 	// const titans = await prisma.titan.findMany()
 	
 		
 
+// }
+
+// // Execute the main function and handle disconnection and errors
+// main()
+// 	.then(() => prisma.$disconnect()) // Disconnect from the database on successful completion
+// 	.catch(async (e) => {
+// 		console.error(e); // Log any errors
+// 		await prisma.$disconnect(); // Ensure disconnection even if an error occurs
+// 		process.exit(1); // Exit the process with an error code
+// 	});
+
+
+
+async function main() {
+  const titans = await prisma.titan.findMany()
+  console.log(titans)
 }
 
-// Execute the main function and handle disconnection and errors
 main()
-	.then(() => prisma.$disconnect()) // Disconnect from the database on successful completion
-	.catch(async (e) => {
-		console.error(e); // Log any errors
-		await prisma.$disconnect(); // Ensure disconnection even if an error occurs
-		process.exit(1); // Exit the process with an error code
-	});
+  .catch(e => {
+    throw e;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

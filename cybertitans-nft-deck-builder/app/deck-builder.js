@@ -3,50 +3,36 @@ import Image from "next/image"
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { useEffect, useState } from "react"
 import { Droppable } from "./_board/deck-slot";
+import { useSession } from 'next-auth/react'
 import { ItemDraggable } from "./_board/item";
+import { persistBoard, persistItemsInBoard, persistSynergiesCounter, saveBuild } from "./actions";
+import GoogleSignIn from "./(auth)/google/signin/google-signin";
 
-const red = 'invert(22%) sepia(96%) saturate(5375%) hue-rotate(355deg) brightness(92%) contrast(121%)'
-const blue = 'invert(8%) sepia(100%) saturate(7230%) hue-rotate(248deg) brightness(95%) contrast(144%)'
-const yellow = 'invert(97%) sepia(56%) saturate(2855%) hue-rotate(333deg) brightness(101%) contrast(102%)'
-const raygun = "https://jy37vuigv8.ufs.sh/f/AA3xkTQET8SoSFPZW6K3v92ZMKfQFXw67dA1tHjUTIL5ycDO"
-// temp items
-// const itemsData = {
-//   "item.raygun-1": <ItemDraggable id={"item.raygun-1"} size={45} image_url={raygun} color={red} />,
-//   "item.raygun-2": <ItemDraggable id={"item.raygun-2"} size={45} image_url={raygun} color={blue} />,
-//   "item.raygun-3": <ItemDraggable id={"item.raygun-3"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-4": <ItemDraggable id={"item.raygun-4"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-5": <ItemDraggable id={"item.raygun-5"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-6": <ItemDraggable id={"item.raygun-6"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-7": <ItemDraggable id={"item.raygun-7"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-8": <ItemDraggable id={"item.raygun-8"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-9": <ItemDraggable id={"item.raygun-9"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-10": <ItemDraggable id={"item.raygun-10"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-11": <ItemDraggable id={"item.raygun-11"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-12": <ItemDraggable id={"item.raygun-12"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-13": <ItemDraggable id={"item.raygun-13"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-14": <ItemDraggable id={"item.raygun-14"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-15": <ItemDraggable id={"item.raygun-15"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-16": <ItemDraggable id={"item.raygun-16"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-17": <ItemDraggable id={"item.raygun-17"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-18": <ItemDraggable id={"item.raygun-18"} size={45} image_url={raygun} color={yellow} />,
-//   "item.raygun-19": <ItemDraggable id={"item.raygun-19"} size={45} image_url={raygun} color={yellow} />
-// }
 
 export default function DeckBuilder({
+  boardInit,
   titans,
   titanCards,
-  itemsData
+  deckInit,
+  itemsData,
+  itemBoardSlotsInit,
+  synergiesInit,
 }) {
-  const [board, setBoard] = useState(Array(32).fill(null)); // board would be a better name
-  const [deck, setDeck] = useState(titanCards); // array of ids of the titans in the deck
+
+  console.log("board init:", boardInit);
+  
+  const [board, setBoard] = useState(boardInit); // board would be a better name
+  const [deck, setDeck] = useState(deckInit); // array of ids of the titans in the deck
+  const [items, setItems] = useState(itemsData)
+  const [itemsBoardSlots, setItemsBoardSlots] = useState(itemBoardSlotsInit)
+  const [synergies, setSynergies] = useState(synergiesInit)
+
   const [currentDraggableId, setCurrentDraggableId] = useState(null); // null || id of the draggable being dragged.
   const [draggedCard, setDraggedCard] = useState(null);
   const [draggedItem, setDraggedItem] = useState(null)
-  const [synergies, setSynergies] = useState({ "oceanic": 0, "forest": 0, "magma": 0, "desert": 0, "humanoid": 0, "electric": 0, "arctic": 0, "holy": 0, "demon": 0, "spirit": 0, "indomitable": 0, "caster": 0, "shooter": 0, "weaponsMaster": 0, "guardian": 0, "assassin": 0, "shieldmaiden": 0, "greedy": 0 })
   const [currentDraggableTitanId, setCurrentDraggableTitanId] = useState(null)
   const [nameFilter, setNameFilter] = useState("")
-  const [items, setItems] = useState(itemsData)
-  const [itemsBoardSlots, setItemsBoardSlots] = useState(Array(32).fill([]))
+  const [buildName, setBuildName] = useState("")
 
 
   // crystals counter
@@ -55,11 +41,51 @@ export default function DeckBuilder({
   const [fortune, setFortune] = useState(1)
 
 
+  const { data: session } = useSession()
+
+  useEffect(() => {} ,[board]) 
 
 
-  useEffect(() => {
-    console.log(itemsBoardSlots)
-  })
+  function handleSave(buildName) {
+    // Saving itemBoardSlots
+    let persistedSlots = {}
+    itemsBoardSlots.forEach((slots, i) => {
+      persistedSlots[i] = []
+      if (slots.length !== 0) {
+        slots.forEach((item, j) => {
+          persistedSlots[i].push(item.props)
+        })
+      }
+    })
+
+    const sanitizedBoard = board.map(item => item === null ? '' : item);
+
+    if (session.user)
+      saveBuild(buildName, session.user, persistedSlots, synergies, sanitizedBoard)
+
+
+    // persistItemsInBoard(persistedSlots)
+
+    // Saving synergies counter.
+    // persistSynergiesCounter(synergies) 
+
+
+    // persistBoard(board)
+
+    // // Board and deck persist.
+    // let persistedTitanSlots = {}
+    // board.forEach((titanId, index) => {
+    //   persistedTitanSlots[index] = {}
+    //   if (titanId !== null) {
+    //     persistedTitanSlots[index] = titanId
+    //   }
+    // })
+
+    // console.log(persistedTitanSlots)
+
+
+    // // persistDeck(deck)
+  }
 
   function handleDragEndItem(itemId, droppableSelected) {
     // 2. Item is placed on the items list. 
@@ -101,7 +127,6 @@ export default function DeckBuilder({
     setItemsBoardSlots((prev) => {
       const newSlots = prev.map(slot => [...slot]);
       if (newSlots[droppableSelected].length < 3) {
-        console.log("entro");
         newSlots[droppableSelected] = [...newSlots[droppableSelected], itemsData[itemId]];
         setItems((prevItems) => ({
           ...prevItems,
@@ -569,11 +594,11 @@ export default function DeckBuilder({
 
           {/* Board */}
           <div className="grid grid-cols-8 gap-2 w-[592px] h-[360px] border-solid rounded-md">
-            {board.map((item, index) => (
+            {board.map((titanId, index) => (
               <Droppable id={index} key={index}>
                 <div className="h-[80px] w-[70px] relative border-solid border-2 border-neutral rounded-md flex justify-end items-end">
                   {/* board[index] -> titanId */}
-                  {board[index] !== null ? titanCards[board[index].toString()] : null}
+                  {board[index] !== null ? titanCards[titanId] : null}
                   <div className="bg-neutral w-14 h-6 absolute -bottom-2.5 rounded-sm z-30">
                     {/* <Droppable id={`item.slot.${index}`}> */}
                     <div className="flex relative justify-center items-center">
@@ -607,8 +632,49 @@ export default function DeckBuilder({
           {/* Items end */}
         </div>
 
+
+        {session?.user ?
+          (
+            <div className="w-[592px]">
+              {/* <button onClick={handleSave} className="btn btn-accent float-right">Save</button> */}
+              {/* Open the modal using document.getElementById('ID').showModal() method */}
+
+              <button className="btn btn-accent float-right" onClick={() => document.getElementById('my_modal_1').
+                // @ts-ignore
+                showModal()}>✔️ Save</button>
+              <dialog id="my_modal_1" className="modal">
+                <div className="modal-box ">
+                  <h3 className="font-bold text-lg">Select a name for your build.</h3>
+                  <input type="text" placeholder="Build name" className="input input-bordered w-full max-w-xs my-10" onChange={(e) => setBuildName(e.target.value)} value={buildName} />
+                  <div className="modal-action flex-end">
+                    <form method="dialog">
+                      {/* if there is a button in form, it will close the modal */}
+                      <button className="btn">Close</button>
+                      <button onClick={() => handleSave(buildName)} className="btn btn-accent mx-3">submit</button>
+                    </form>
+                  </div>
+                </div>
+              </dialog>
+            </div>
+          ) : (
+            <div className="w-[592px]">
+              <button className="btn btn-accent float-right" onClick={() => document.getElementById('my_modal_2').
+                // @ts-ignore
+                showModal()}>✔️ Save</button>
+              <dialog id="my_modal_2" className="modal">
+                <div className="modal-box p-0 w-auto">
+                  <GoogleSignIn />
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
+            </div>
+          )}
+
+
         {/* Deck: (Draggable Titans cards) */}
-        <Droppable id="_deck" className="fer">
+        <Droppable id="_deck">
 
           <div role="tablist" className="tabs tabs-lifted relative">
             <label className="input input-bordered absolute right-0 -top-6 flex items-center"
@@ -655,8 +721,8 @@ export default function DeckBuilder({
               <div className="border-b border-neutral w-full h-1/3 flex justify-center flex-col">
                 <div className=" flex justify-between w-full h-1/3 px-3 pt-3">
                   <div><p className="pl-2">Lethal</p></div>
-                  <div className="tooltip" 
-                  data-tip={`
+                  <div className="tooltip"
+                    data-tip={`
                     ${lethal === 1 ? 'All allied Titans get:- 200 Health - 10 Damage - 10 Cyber Damage' : ''}
                     ${lethal === 2 ? 'All allied Titans get:- 400 Health - 25 Damage - 25 Cyber Damage' : ''}
                     ${lethal === 3 ? 'All allied Titans get: - 800 Health - 55 Damage - 55 Cyber Damage - 25% Attack Speed' : ''}
@@ -677,11 +743,11 @@ export default function DeckBuilder({
                 <div className=" flex justify-between w-full h-1/3 px-3 pt-3">
                   <div><p className="pl-2">Ultimate</p></div>
                   <div className="tooltip"
-                  data-tip={`
+                    data-tip={`
                     ${ultimate === 1 ? 'All allied Titans get - 2% Max Health restore per second - 2% Max Charge restore per second' : ''}
                     ${ultimate === 2 ? 'All allied Titans get - 4% Max Health restore per second - 4% Max Charge restore per second' : ''}
                     ${ultimate === 3 ? 'All allied Titans get - 9% Max Health restore per second - 9% Max Charge restore per second - 25% Attack Speed' : ''}
-                  `} 
+                  `}
                   ><button>？</button></div>
                 </div>
                 <div onClick={() => ultimate < 3 ? setUltimate(ultimate + 1) : setUltimate(1)} className="h-2/3 flex justify-center items-center">

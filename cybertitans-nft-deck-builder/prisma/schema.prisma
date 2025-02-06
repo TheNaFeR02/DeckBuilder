@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Titan {
-  id        Int     @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   image_url String?
   cost      Int?
@@ -30,11 +30,31 @@ model Synergy {
 }
 
 model Item {
-  id        Int     @id @default(autoincrement())
-  name      String
-  image_url String? 
+  id          Int     @id @default(autoincrement())
+  name        String
+  image_url   String?
   description String?
-  upgrade_A String?
-  upgrade_B String?
-  upgrade_C String?
+  upgrade_A   String?
+  upgrade_B   String?
+  upgrade_C   String?
 }
+
+model User {
+  email   String @unique
+  name    String?
+  image   String?
+  build   Build[]
+}
+
+model Build {
+  id              Int    @id @default(autoincrement())
+  name            String
+  itemsBoardSlots Json?
+  synergies       Json?
+  board           String[]
+  authorEmail     String?  
+  author          User? @relation(fields: [authorEmail], references: [email])
+}
+
+
+

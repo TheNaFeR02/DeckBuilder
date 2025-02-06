@@ -14,7 +14,6 @@ export function ItemDraggable({ id, size, color, image_url, description, upgrade
 
     return (
         <>
-
             <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
                 <div className='relative'>
                     <span

@@ -5,6 +5,8 @@ import Providers from "./providers";
 import Image from "next/image"
 import { getServerSession } from 'next-auth/next'
 import { options } from "../api/auth/[...nextauth]/options";
+import { signOut } from "next-auth/react";
+import Logout from "../(auth)/google/signin/logout";
 
 
 const geistSans = Geist({
@@ -26,6 +28,9 @@ export default async function RootLayout({ children }) {
 
   const session = await getServerSession(options)
 
+  if (!session)
+    console.log("session lay", session, "user is not logged in")
+
   return (
     <html lang="en" >
       <Providers>
@@ -35,7 +40,7 @@ export default async function RootLayout({ children }) {
         >
           <div className="navbar bg-base-100">
             <div className="flex-1">
-              <a className="btn btn-ghost text-xl">
+              <a className="btn btn-ghost text-xl" href="/">
                 <Image
                   src="https://dex-bin.bnbstatic.com/static/dapp-uploads/1lalKyaw4nxafPLQMCRzC"
                   alt="cybertitans"
@@ -47,20 +52,34 @@ export default async function RootLayout({ children }) {
             </div>
             <div className="flex-none">
               <ul className="menu menu-horizontal px-1">
-                {!session &&  <li><Link href={"/google/signin"}>Sign in</Link></li>}
-                
-                {session && 
-                // @ts-ignore
-                <li><Link href={"/"}>{session.user.name}</Link></li>}
-                {/* <li>
+                {!session && <li><Link href={"/google/signin"}>Sign in</Link></li>}
+
+                {session &&
+                  // @ts-ignore
+                  // (<>
+                  //   <li><Link href={"/"}>Builds</Link></li>
+                  //   <li>
+                  //     <details>
+                  //       <summary><Link href={"/"}>{session.user.name}</Link></summary>
+                  //       <ul className="bg-base-100 rounded-t-none p-2">
+                  //         <li><Logout /></li>
+                  //       </ul>
+                  //     </details>
+                  //   </li> */
+                  // </>
+                  // )}
+                  <>
+                   <li><Link href={"/builds"}>Builds</Link></li>
+                    <li>
                   <details>
-                    <summary>Parent</summary>
+                    <summary>{session.user.name}</summary>
                     <ul className="bg-base-100 rounded-t-none p-2">
-                      <li><a>Link 1</a></li>
-                      <li><a>Link 2</a></li>
+                      <li><Logout /></li>
                     </ul>
                   </details>
-                </li> */}
+                </li> 
+                  </>
+                }
               </ul>
             </div>
           </div>
