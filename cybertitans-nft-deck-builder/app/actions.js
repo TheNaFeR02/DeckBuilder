@@ -2,6 +2,9 @@
 
 import { prisma } from "@/client"
 import { Prisma } from "@prisma/client"
+import { MaxBuildsExceededError } from "./utils/errors"
+
+
 
 export async function persistItemsInBoard(persistedSlots) {
     await prisma.build.create({
@@ -57,13 +60,17 @@ export async function persistBoard(board) {
 
 export async function saveBuild(buildName, user, persistedSlots, synergies, sanitizedBoard) {
     try {
+        const buildsList = await prisma.build.findMany();
+
+        if (buildsList.length > 10) throw new MaxBuildsExceededError("Maximum number of builds exceeded. Max builds per user is 10.");
+
         const build = await prisma.build.create({
             data: {
                 name: buildName,
                 itemsBoardSlots: persistedSlots,
                 synergies: synergies,
                 board: sanitizedBoard,
-                author : {
+                author: {
                     connect: { email: user.email }
                 }
             }
@@ -72,14 +79,13 @@ export async function saveBuild(buildName, user, persistedSlots, synergies, sani
         console.log("build created successfully: ", build)
     } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-            // The .code property can be accessed in a type-safe manner
-            if (e.code) {
-                console.log(
-                    'Known error:', e.message
-                )
-            } else console.log("Unknown error :", e)
+            // Handle Prisma-specific errors
+            console.log('Known Prisma error:', e.message);
+
         }
+
         throw e
+
     }
 
 

@@ -1,13 +1,16 @@
 "use client"
 import Image from "next/image"
 import { DndContext, DragOverlay } from '@dnd-kit/core';
-import { useEffect, useState } from "react"
+import { cloneElement, useEffect, useState } from "react"
 import { Droppable } from "./_board/deck-slot";
 import { useSession } from 'next-auth/react'
 import { ItemDraggable } from "./_board/item";
 import { persistBoard, persistItemsInBoard, persistSynergiesCounter, saveBuild } from "./actions";
 import GoogleSignIn from "./(auth)/google/signin/google-signin";
 import { camelize } from "./utils/camelize";
+import { loadGetInitialProps } from "next/dist/shared/lib/utils";
+import { Prisma } from "@prisma/client";
+import { MaxBuildsExceededError } from "./utils/errors";
 
 
 export default function DeckBuilder({
@@ -35,7 +38,7 @@ export default function DeckBuilder({
   const [nameFilter, setNameFilter] = useState("")
   const [buildName, setBuildName] = useState("")
   const [showAlert, setShowAlert] = useState(false) // When the build is saved successfully!.
-  const [showErrorAlert, setShowErrorAlert] = useState(false)
+  const [showErrorAlert, setShowErrorAlert] = useState({ state: false, message: "" })
 
 
   // crystals counter
@@ -45,9 +48,6 @@ export default function DeckBuilder({
 
 
   const { data: session } = useSession()
-
-  useEffect(() => { console.log("weapon master", synergies.forest);
-   })
 
 
   async function handleSave(buildName) {
@@ -78,15 +78,28 @@ export default function DeckBuilder({
       }
 
 
-
     } catch (e) {
-      console.log("there was an error saving the build", e);
 
-      setShowErrorAlert(true)
+      setShowErrorAlert({ state: true, message: e.message })
 
       setTimeout(() => {
-        setShowErrorAlert(false)
+        setShowErrorAlert({ state: false, message: "" })
       }, 3000)
+
+
+      
+      if (e instanceof MaxBuildsExceededError) {
+        // Handle the specific case where the maximum number of builds is exceeded
+        console.log('Max builds exceeded error:', e.message);
+        console.log("entro aquiiiii");
+      } else if (e instanceof Error) {
+        // Handle general errors
+        console.log('General error:', e.message);
+      } else {
+        // Handle unknown errors
+        console.log('Unknown error:', e);
+      }
+
 
 
     }
@@ -156,11 +169,28 @@ export default function DeckBuilder({
     setItemsBoardSlots((prev) => {
       const newSlots = prev.map(slot => [...slot]);
       if (newSlots[droppableSelected].length < 3) {
-        newSlots[droppableSelected] = [...newSlots[droppableSelected], itemsData[itemId]];
-        setItems((prevItems) => ({
-          ...prevItems,
-          [itemId]: null
-        }));
+        newSlots[droppableSelected] = [...newSlots[droppableSelected], items[itemId]];
+
+        let cloneItemId = items[itemId].props.id;
+        const parts = items[itemId].props.id.split("-");
+        if (parts.length > 1 && !isNaN(parts[0])) {
+          parts[0] = (Number(parts[0]) + 1).toString();
+        } else {
+          parts.unshift("1");
+        }
+        const _cloneItemId = parts.join("-");
+
+        const cloneItem = cloneElement(items[itemId], { ...items[itemId].props, id: _cloneItemId });
+
+        console.log("cloneItemId", cloneItemId);
+        console.log("clone", cloneItem);
+
+        setItems((prevItems) => (
+          {
+            ...prevItems,
+            [itemId]: null,
+            [_cloneItemId]: cloneItem
+          }));
 
         // In case the item was a synergy we need to add +2 points to the synergies on the board.
         const _synergy = itemId.split(".")[1]
@@ -190,7 +220,7 @@ export default function DeckBuilder({
 
     console.log("droppable selected", droppableSelected)
 
-    if (currentDraggableId.startsWith("item.") && droppableSelected !== '_deck') {
+    if (currentDraggableId.includes("item.") && droppableSelected !== '_deck') {
       handleDragEndItem(currentDraggableId, droppableSelected)
       return
     }
@@ -297,7 +327,7 @@ export default function DeckBuilder({
 
     // active.id is the id of the draggable (titan card/item) being dragged.
     // We check if it's not an item.
-    if (!active.id.toString().startsWith("item.")) {
+    if (!active.id.toString().includes("item.")) {
       setCurrentDraggableTitanId(active.data.current.titanId)
       setDraggedCard(titanCards[active.id.toString()]);
     }
@@ -329,7 +359,7 @@ export default function DeckBuilder({
         )}
 
         {/*  Error alert when build had an error when saving*/}
-        {showErrorAlert && (
+        {showErrorAlert.state && (
           <div role="alert" className="alert alert-error">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -342,7 +372,7 @@ export default function DeckBuilder({
                 strokeWidth="2"
                 d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>Error! there was an error when saving the build. Try again later.</span>
+            <span>{showErrorAlert.message}</span>
           </div>
         )}
 
