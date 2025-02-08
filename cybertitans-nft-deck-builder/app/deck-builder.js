@@ -20,7 +20,7 @@ export default function DeckBuilder({
 }) {
 
   console.log("board init:", boardInit);
-  
+
   const [board, setBoard] = useState(boardInit); // board would be a better name
   const [deck, setDeck] = useState(deckInit); // array of ids of the titans in the deck
   const [items, setItems] = useState(itemsData)
@@ -33,6 +33,8 @@ export default function DeckBuilder({
   const [currentDraggableTitanId, setCurrentDraggableTitanId] = useState(null)
   const [nameFilter, setNameFilter] = useState("")
   const [buildName, setBuildName] = useState("")
+  const [showAlert, setShowAlert] = useState(false) // When the build is saved successfully!.
+  const [showErrorAlert, setShowErrorAlert] = useState(false)
 
 
   // crystals counter
@@ -43,10 +45,10 @@ export default function DeckBuilder({
 
   const { data: session } = useSession()
 
-  useEffect(() => {} ,[board]) 
+  useEffect(() => { }, [board])
 
 
-  function handleSave(buildName) {
+  async function handleSave(buildName) {
     // Saving itemBoardSlots
     let persistedSlots = {}
     itemsBoardSlots.forEach((slots, i) => {
@@ -60,8 +62,33 @@ export default function DeckBuilder({
 
     const sanitizedBoard = board.map(item => item === null ? '' : item);
 
-    if (session.user)
-      saveBuild(buildName, session.user, persistedSlots, synergies, sanitizedBoard)
+    try {
+
+      if (session.user) {
+        await saveBuild(buildName, session.user, persistedSlots, synergies, sanitizedBoard)
+        // Show the alert
+        setShowAlert(true);
+
+        // Hide the alert after 3 seconds
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 3000);
+      }
+
+
+
+    } catch (e) {
+      console.log("there was an error saving the build", e);
+
+      setShowErrorAlert(true)
+
+      setTimeout(() => {
+        setShowErrorAlert(false)
+      }, 3000)
+
+
+    }
+
 
 
     // persistItemsInBoard(persistedSlots)
@@ -280,7 +307,41 @@ export default function DeckBuilder({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}>
       <div className="h-screen flex gap-10 justify-center flex-col items-center">
+        {/* Green/successful alert when build was saved */}
+        {showAlert && (
+          <div role="alert" className="alert alert-success">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 shrink-0 stroke-current"
+              fill="none"
+              viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Your build has been saved!</span>
+          </div>
+        )}
 
+        {/*  Error alert when build had an error when saving*/}
+        {showErrorAlert && (
+          <div role="alert" className="alert alert-error">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 shrink-0 stroke-current"
+              fill="none"
+              viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Error! there was an error when saving the build. Try again later.</span>
+          </div>
+        )}
 
         <div className="flex flex-wrap relative gap-3">
           {/* Synergies */}
