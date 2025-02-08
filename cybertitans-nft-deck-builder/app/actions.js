@@ -58,7 +58,7 @@ export async function persistBoard(board) {
 }
 
 
-export async function saveBuild(buildName, user, persistedSlots, synergies, sanitizedBoard) {
+export async function saveBuild(buildName, user, persistedSlots, synergies, sanitizedBoard, notes) {
     try {
         const buildsList = await prisma.build.findMany();
 
@@ -70,6 +70,7 @@ export async function saveBuild(buildName, user, persistedSlots, synergies, sani
                 itemsBoardSlots: persistedSlots,
                 synergies: synergies,
                 board: sanitizedBoard,
+                notes: notes,
                 author: {
                     connect: { email: user.email }
                 }

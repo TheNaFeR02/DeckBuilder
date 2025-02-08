@@ -37,7 +37,8 @@ export default async function BuildScreen({ params }) {
         select: {
             board: true,
             itemsBoardSlots: true,
-            synergies: true
+            synergies: true,
+            notes: true
         }
     })
 
@@ -124,5 +125,6 @@ export default async function BuildScreen({ params }) {
         itemsData={itemsData}
         itemBoardSlotsInit={arrBoard}
         synergiesInit={synergies}
+        notesInit={itemsBoardSlots.notes}
     />
 }

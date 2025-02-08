@@ -21,6 +21,7 @@ export default function DeckBuilder({
   itemsData,
   itemBoardSlotsInit,
   synergiesInit,
+  notesInit
 }) {
 
   console.log("board init:", boardInit);
@@ -46,6 +47,8 @@ export default function DeckBuilder({
   const [ultimate, setUltimate] = useState(1)
   const [fortune, setFortune] = useState(1)
 
+  const [notes, setNotes] = useState(notesInit)
+
 
   const { data: session } = useSession()
 
@@ -67,7 +70,7 @@ export default function DeckBuilder({
     try {
 
       if (session.user) {
-        await saveBuild(buildName, session.user, persistedSlots, synergies, sanitizedBoard)
+        await saveBuild(buildName, session.user, persistedSlots, synergies, sanitizedBoard, notes)
         // Show the alert
         setShowAlert(true);
 
@@ -87,7 +90,7 @@ export default function DeckBuilder({
       }, 3000)
 
 
-      
+
       if (e instanceof MaxBuildsExceededError) {
         // Handle the specific case where the maximum number of builds is exceeded
         console.log('Max builds exceeded error:', e.message);
@@ -339,7 +342,7 @@ export default function DeckBuilder({
       id="draggable-table-01"
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}>
-      <div className="h-screen flex gap-10 justify-center flex-col items-center">
+      <div className=" flex gap-10 justify-center flex-col items-center">
         {/* Green/successful alert when build was saved */}
         {showAlert && (
           <div role="alert" className="alert alert-success">
@@ -886,6 +889,10 @@ export default function DeckBuilder({
         </Droppable>
         {/* Deck end */}
 
+
+        <div className="w-[592px] ">
+          <textarea className="textarea textarea-bordered w-full h-full relative mb-20 pb-20" placeholder="Write your notes" onChange={(e) => setNotes(e.target.value)} value={notes}></textarea>
+        </div>
 
 
 

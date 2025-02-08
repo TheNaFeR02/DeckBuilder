@@ -54,6 +54,7 @@ model Build {
   board           String[]
   authorEmail     String?  
   author          User? @relation(fields: [authorEmail], references: [email])
+  notes           String?
 }
 
 
