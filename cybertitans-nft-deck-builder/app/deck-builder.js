@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react'
 import { ItemDraggable } from "./_board/item";
 import { persistBoard, persistItemsInBoard, persistSynergiesCounter, saveBuild } from "./actions";
 import GoogleSignIn from "./(auth)/google/signin/google-signin";
+import { camelize } from "./utils/camelize";
 
 
 export default function DeckBuilder({
@@ -45,7 +46,8 @@ export default function DeckBuilder({
 
   const { data: session } = useSession()
 
-  useEffect(() => { }, [board])
+  useEffect(() => { console.log("weapon master", synergies.forest);
+   })
 
 
   async function handleSave(buildName) {
@@ -229,7 +231,7 @@ export default function DeckBuilder({
           // console.log(synergy.name.toLowerCase())
           setSynergies((prevSynergies) => ({
             ...prevSynergies,
-            [synergy.name.toString().toLowerCase()]: (prevSynergies[synergy.name.toString().toLowerCase()] || 0) - 1
+            [camelize(synergy.name.toString().toLowerCase())]: (prevSynergies[camelize(synergy.name.toString().toLowerCase())] || 0) - 1
           }))
         })
 
@@ -265,10 +267,11 @@ export default function DeckBuilder({
       // Increase one point for the synergy.
       const titanSelected = titans[currentDraggableTitanId]
       titanSelected.synergies.forEach(synergy => {
-        // console.log(synergy.name.toLowerCase())
+
+
         setSynergies((prevSynergies) => ({
           ...prevSynergies,
-          [synergy.name.toString().toLowerCase()]: (prevSynergies[synergy.name.toString().toLowerCase()] || 0) + 1
+          [camelize(synergy.name.toString().toLowerCase())]: (prevSynergies[camelize(synergy.name.toString().toLowerCase())] || 0) + 1
         }))
       })
 
