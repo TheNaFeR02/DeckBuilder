@@ -4,6 +4,7 @@
       "@/*": ["./*"]
     },
     "checkJs": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "module": "NodeNext"
   }
 }

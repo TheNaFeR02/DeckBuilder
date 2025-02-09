@@ -1,12 +1,14 @@
 // Import Prisma Client
-const { PrismaClient } = require('@prisma/client')
-const fs = require('node:fs');
-const prisma = new PrismaClient()
-// use `prisma` in your application to read and write data in your DB
-const { utapi } = require("../app/server/uploadthing/uploadthing");
-const { titansList } = require('./titans');
-const { synergiesList } = require('./synergies');
-const { itemsList } = require('./items');
+// const { PrismaClient } = require('@prisma/client')
+// const fs = require('node:fs');
+// const prisma = new PrismaClient()
+// // use `prisma` in your application to read and write data in your DB
+// const { utapi } = require("../app/server/uploadthing/uploadthing");
+// const { titansList } = require('./titans');
+// const { synergiesList } = require('./synergies');
+// const { itemsList } = require('./items');
+
+const { prisma } = require("@/client");
 
 
 
