@@ -1,8 +1,13 @@
 // Import Prisma Client
 const { PrismaClient } = require('@prisma/client')
+const fs = require('node:fs');
 const prisma = new PrismaClient()
 // use `prisma` in your application to read and write data in your DB
 const { utapi } = require("../app/server/uploadthing/uploadthing");
+const { titansList } = require('./titans');
+const { synergiesList } = require('./synergies');
+const { itemsList } = require('./items');
+
 
 
 // Name	Image	Cost	Synergy 1	Synergy 2	Synergy 3
@@ -146,8 +151,8 @@ const info = [
 // 		{ name: 'PROTONN', cost: 5 },
 // 		{ name: 'SEMET', cost: 5 }
 // 	  ];
-	
-	
+
+
 // 	  for (const titan of titanPrices) {
 // 		await prisma.titan.updateMany({
 // 		  where: { name: titan.name },
@@ -156,8 +161,8 @@ const info = [
 // 	  }	
 
 // 	// const titans = await prisma.titan.findMany()
-	
-		
+
+
 
 // }
 
@@ -173,14 +178,42 @@ const info = [
 
 
 async function main() {
-  const titans = await prisma.titan.findMany()
-  console.log(titans)
+	// titans
+	// const createMany = await prisma.titan.createMany({
+	// 	data: titansList
+	// })
+
+	// console.log(createMany);	
+	
+	// synergies
+	
+	// const synergies = await prisma.synergy.findMany()
+	// console.log(synergies)	
+
+	// const createMany = await prisma.synergy.createMany({
+	// 	data: synergiesList
+	// })
+
+	// console.log(createMany);	
+
+	// items
+	// const items = await prisma.item.findMany()
+
+	// const createMany = await prisma.item.createMany({
+	// 	data: itemsList
+	// })
+
+	// console.log(createMany);	
+	
+	
+	
 }
 
+
 main()
-  .catch(e => {
-    throw e;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+	.catch(e => {
+		throw e;
+	})
+	.finally(async () => {
+		await prisma.$disconnect();
+	});
