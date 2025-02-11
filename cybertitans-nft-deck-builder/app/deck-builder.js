@@ -43,9 +43,9 @@ export default function DeckBuilder({
 
 
   // crystals counter
-  const [lethal, setLethal] = useState(1)
-  const [ultimate, setUltimate] = useState(1)
-  const [fortune, setFortune] = useState(1)
+  const [lethal, setLethal] = useState(0)
+  const [ultimate, setUltimate] = useState(0)
+  const [fortune, setFortune] = useState(0)
 
   const [notes, setNotes] = useState(notesInit)
 
