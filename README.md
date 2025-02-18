@@ -6,7 +6,7 @@ Often times since I started to work with frontend a couple of years ago, I was c
 
 The purpose of the project was to enhanced my javascript skills. If you don't know what's the game about, don't worry me neither. It was built as an exercise with a friend doing as project manager asking for different requirements that he would like to have. The idea was to have a chat about the requirements with him and I was trying to get to know what he wants and reproduce it.
 # Live demo
-Check out the live application [here](https://pf-ohs.vercel.app/).
+Check out the live application [here](https://deck-builder-kappa.vercel.app/).
 
 # Technologies used
 + App was built on React, Nextjs and Prisma. Deployed in [Vercel](https://vercel.com) and the Postgres database on [neon.tech](https://neon.tech) 
